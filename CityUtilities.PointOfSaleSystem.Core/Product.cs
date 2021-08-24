@@ -14,7 +14,7 @@ namespace CityUtilities.PointOfSaleSystem.Core
         public string Title { get; set; }
         public double Price { get; set; }
 
-        public ICollection<ProductStoreLocation> StoreLocations { get; set; }
+        public ICollection<ProductLocation> ProductLocations { get; set; }
         public ICollection<SalesOrderProduct> SalesOrders {  get; set; }
     }
 }

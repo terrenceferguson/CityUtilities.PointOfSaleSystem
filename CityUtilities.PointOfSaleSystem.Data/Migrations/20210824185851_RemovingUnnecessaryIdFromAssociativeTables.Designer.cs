@@ -4,70 +4,22 @@ using CityUtilities.PointOfSaleSystem.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace CityUtilities.PointOfSaleSystem.Data.Migrations
 {
     [DbContext(typeof(PointOfSaleContext))]
-    partial class PointOfSaleContextModelSnapshot : ModelSnapshot
+    [Migration("20210824185851_RemovingUnnecessaryIdFromAssociativeTables")]
+    partial class RemovingUnnecessaryIdFromAssociativeTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("ProductVersion", "5.0.9")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-            modelBuilder.Entity("CityUtilities.PointOfSaleSystem.Core.Aisle", b =>
-                {
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Title")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Aisle");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Title = "A"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Title = "B"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Title = "C"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Title = "D"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Title = "E"
-                        },
-                        new
-                        {
-                            Id = 6,
-                            Title = "F"
-                        },
-                        new
-                        {
-                            Id = 7,
-                            Title = "G"
-                        });
-                });
 
             modelBuilder.Entity("CityUtilities.PointOfSaleSystem.Core.Product", b =>
                 {
@@ -90,22 +42,22 @@ namespace CityUtilities.PointOfSaleSystem.Data.Migrations
                     b.ToTable("Product");
                 });
 
-            modelBuilder.Entity("CityUtilities.PointOfSaleSystem.Core.ProductLocation", b =>
+            modelBuilder.Entity("CityUtilities.PointOfSaleSystem.Core.ProductStoreLocation", b =>
                 {
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
 
-                    b.Property<int>("AisleId")
+                    b.Property<int>("StoreLocationId")
                         .HasColumnType("int");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
-                    b.HasKey("ProductId", "AisleId");
+                    b.HasKey("ProductId", "StoreLocationId");
 
-                    b.HasIndex("AisleId");
+                    b.HasIndex("StoreLocationId");
 
-                    b.ToTable("ProductLocation");
+                    b.ToTable("ProductStoreLocation");
                 });
 
             modelBuilder.Entity("CityUtilities.PointOfSaleSystem.Core.SalesOrder", b =>
@@ -147,23 +99,38 @@ namespace CityUtilities.PointOfSaleSystem.Data.Migrations
                     b.ToTable("SalesOrderProduct");
                 });
 
-            modelBuilder.Entity("CityUtilities.PointOfSaleSystem.Core.ProductLocation", b =>
+            modelBuilder.Entity("CityUtilities.PointOfSaleSystem.Core.StoreLocation", b =>
                 {
-                    b.HasOne("CityUtilities.PointOfSaleSystem.Core.Aisle", "Aisle")
-                        .WithMany()
-                        .HasForeignKey("AisleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<int>("AisleId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("StoreLocation");
+                });
+
+            modelBuilder.Entity("CityUtilities.PointOfSaleSystem.Core.ProductStoreLocation", b =>
+                {
                     b.HasOne("CityUtilities.PointOfSaleSystem.Core.Product", "Product")
-                        .WithMany("ProductLocations")
+                        .WithMany("StoreLocations")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Aisle");
+                    b.HasOne("CityUtilities.PointOfSaleSystem.Core.StoreLocation", "StoreLocation")
+                        .WithMany("Products")
+                        .HasForeignKey("StoreLocationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Product");
+
+                    b.Navigation("StoreLocation");
                 });
 
             modelBuilder.Entity("CityUtilities.PointOfSaleSystem.Core.SalesOrderProduct", b =>
@@ -187,12 +154,17 @@ namespace CityUtilities.PointOfSaleSystem.Data.Migrations
 
             modelBuilder.Entity("CityUtilities.PointOfSaleSystem.Core.Product", b =>
                 {
-                    b.Navigation("ProductLocations");
-
                     b.Navigation("SalesOrders");
+
+                    b.Navigation("StoreLocations");
                 });
 
             modelBuilder.Entity("CityUtilities.PointOfSaleSystem.Core.SalesOrder", b =>
+                {
+                    b.Navigation("Products");
+                });
+
+            modelBuilder.Entity("CityUtilities.PointOfSaleSystem.Core.StoreLocation", b =>
                 {
                     b.Navigation("Products");
                 });
